@@ -65,11 +65,23 @@ a{color: white;
     font-size: clamp(24px, 8vw, 38px);
     line-height: 1.1;
     text-align: center;
+    width: calc(100% - 32px);
+    margin: 0 auto;
+    container-type: inline-size;
     top: 0;
   }
 
   h1 span {
     display: block;
+    white-space: nowrap;
+  }
+
+  h1 span:first-child {
+    font-size: 24.665cqw;
+  }
+
+  h1 span:last-child {
+    font-size: 21.311cqw;
   }
 
   h2 {
