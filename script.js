@@ -57,10 +57,12 @@ function formatearFechaHora(valor) {
   return Number.isNaN(fecha.getTime()) ? texto : fecha.toLocaleString("es-CL");
 }
 
-function agregarDato(tarjeta, etiqueta, valor) {
+function agregarDato(tarjeta, valor) {
+  if (!valor) return;
+
   const linea = document.createElement("p");
   linea.className = "metadato";
-  linea.textContent = `${etiqueta}: ${valor}`;
+  linea.textContent = valor;
   tarjeta.append(linea);
 }
 
@@ -92,12 +94,8 @@ function mostrarObras(records, contenedor) {
         tarjeta.append(pie);
       }
 
-      agregarDato(tarjeta, "Autor", obtenerTexto(fields.Autor) || "Sin autor");
-      agregarDato(
-        tarjeta,
-        "Fecha/Hora",
-        formatearFechaHora(fields["Fecha/Hora"]) || "Sin fecha/hora"
-      );
+      agregarDato(tarjeta, obtenerTexto(fields.Autor));
+      agregarDato(tarjeta, formatearFechaHora(fields["Fecha/Hora"]));
 
       return tarjeta;
     });
