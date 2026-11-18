@@ -1,0 +1,48 @@
+body{
+    background-color: black;
+    text-align: center;
+}
+h1 {
+    color: white;   
+    font-family: Arial Narrow, arial, sans-serif;
+    font-size: 66px;
+    position: relative;
+    top:auto
+}
+h2 {
+    color: white;
+    font-family: Arial Narrow, arial, sans-serif;
+    font-size: 40px;
+}
+h3 {
+    color: white;
+    font-family: Arial Narrow, arial, sans-serif;
+    font-size: 20px;
+}
+p {
+    color: white;
+    font-family: Arial Narrow, arial, sans-serif;
+    font-size: 20px;
+}
+
+a{color: white;
+    font-family: Arial Narrow, arial, sans-serif;
+    font-size: 20px;}
+
+    #miradas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.tarjeta img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.tarjeta p {
+  margin: 8px 0 0;
+}
