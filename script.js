@@ -1,45 +1,107 @@
-async function cargarObras() {
-  const grilla = document.getElementById("miradas");
+const CAMPOS_DE_TITULO = [
+  "Título",
+  "Titulo",
+  "Nombre",
+  "Title",
+  "Name",
+  "Descripción",
+  "Descripcion",
+  "Description"
+];
 
-  try {
-    // Llama a tu propia función serverless en lugar de a Airtable directamente
-    const respuesta = await fetch('/api/obras');
-    if (!respuesta.ok) throw new Error("No se pudieron cargar las obras.");
-    
-    const data = await respuesta.json();
-    const registros = data.records;
+function obtenerImagenes(record) {
+  const fields = record.fields || {};
 
-    if (!registros || registros.length === 0) {
-      grilla.textContent = "No hay obras registradas.";
-      return;
-    }
+  return Object.entries(fields).flatMap(([nombreCampo, valor]) => {
+    if (!Array.isArray(valor)) return [];
 
-    registros.forEach(registro => {
-      const campos = registro.fields;
-      if (!campos.Foto) return;
+    return valor
+      .filter((adjunto) => adjunto && typeof adjunto.url === "string")
+      .map((adjunto) => ({
+        url: adjunto.url,
+        alt: adjunto.filename || nombreCampo
+      }));
+  });
+}
 
-      const tarjeta = document.createElement("div");
+function obtenerTitulo(fields) {
+  for (const campo of CAMPOS_DE_TITULO) {
+    const valor = fields[campo];
+    if (typeof valor === "string" && valor.trim()) return valor.trim();
+  }
+
+  return "";
+}
+
+function mostrarMensaje(contenedor, mensaje, esError = false) {
+  const elemento = document.createElement("p");
+  elemento.textContent = mensaje;
+  if (esError) elemento.setAttribute("role", "alert");
+  contenedor.replaceChildren(elemento);
+}
+
+function mostrarObras(records, contenedor) {
+  const tarjetas = records.flatMap((record) => {
+    const fields = record.fields || {};
+    const titulo = obtenerTitulo(fields);
+
+    return obtenerImagenes(record).map((imagen) => {
+      const tarjeta = document.createElement("article");
       tarjeta.className = "tarjeta";
 
-      const img = document.createElement("img");
-      img.src = campos.Foto[0].url;
-      img.alt = campos.Autor || "Obra";
+      const elementoImagen = document.createElement("img");
+      elementoImagen.src = imagen.url;
+      elementoImagen.alt = titulo || imagen.alt;
+      elementoImagen.loading = "lazy";
+      tarjeta.append(elementoImagen);
 
-      const autor = document.createElement("p");
-      autor.textContent = campos.Autor || "Autor anónimo";
-
-      const fecha = document.createElement("p");
-      if (campos["Fecha/Hora"]) {
-        fecha.textContent = new Date(campos["Fecha/Hora"]).toLocaleString("es-CL");
+      if (titulo) {
+        const pie = document.createElement("p");
+        pie.textContent = titulo;
+        tarjeta.append(pie);
       }
 
-      tarjeta.append(img, autor, fecha);
-      grilla.appendChild(tarjeta);
+      return tarjeta;
     });
+  });
 
+  if (tarjetas.length === 0) {
+    mostrarMensaje(contenedor, "No se encontraron imágenes en los registros de Airtable.");
+    return;
+  }
+
+  contenedor.replaceChildren(...tarjetas);
+}
+
+async function cargarObras() {
+  const contenedor = document.getElementById("miradas");
+  if (!contenedor) return;
+
+  mostrarMensaje(contenedor, "Cargando imágenes...");
+
+  try {
+    const respuesta = await fetch("/api/obras");
+    let data;
+
+    try {
+      data = await respuesta.json();
+    } catch {
+      throw new Error("La API no devolvió una respuesta JSON válida.");
+    }
+
+    if (!respuesta.ok) {
+      const detalle = data && typeof data.error === "string" ? data.error : "";
+      throw new Error(detalle || `Error al consultar Airtable (${respuesta.status}).`);
+    }
+
+    if (!Array.isArray(data.records)) {
+      throw new Error("La respuesta de Airtable no contiene una lista de registros.");
+    }
+
+    mostrarObras(data.records, contenedor);
   } catch (error) {
-    grilla.textContent = "Error al cargar las obras.";
-    console.error(error);
+    console.error("Error al cargar las imágenes:", error);
+    mostrarMensaje(contenedor, `No se pudieron cargar las imágenes: ${error.message}`, true);
   }
 }
 
