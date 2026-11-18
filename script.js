@@ -60,11 +60,7 @@ function formatearFechaHora(valor) {
 function agregarDato(tarjeta, etiqueta, valor) {
   const linea = document.createElement("p");
   linea.className = "metadato";
-
-  const nombre = document.createElement("strong");
-  nombre.textContent = `${etiqueta}: `;
-
-  linea.append(nombre, document.createTextNode(valor));
+  linea.textContent = `${etiqueta}: ${valor}`;
   tarjeta.append(linea);
 }
 
