@@ -141,8 +141,10 @@ function ajustarTituloMovil() {
   const anchoBase = Math.max(...palabras.map(medirPalabra));
   const tamano = (ancho / anchoBase) * 100;
 
-  palabras.forEach((palabra) => {
+  palabras.forEach((palabra, indice) => {
     palabra.style.fontSize = `${tamano}px`;
+    if (indice === 0) return;
+
     const cantidadDeLetras = Array.from(palabra.textContent.trim()).length;
     const espacio = (ancho - medirPalabra(palabra)) / cantidadDeLetras;
     palabra.style.letterSpacing = `${Math.max(0, espacio)}px`;
