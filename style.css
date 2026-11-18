@@ -46,3 +46,11 @@ a{color: white;
 .tarjeta p {
   margin: 8px 0 0;
 }
+
+.tarjeta .metadato {
+  font-size: 16px;
+}
+
+.tarjeta .metadato + .metadato {
+  margin-top: 4px;
+}

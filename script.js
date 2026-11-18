@@ -33,6 +33,41 @@ function obtenerTitulo(fields) {
   return "";
 }
 
+function obtenerTexto(valor) {
+  if (typeof valor === "string" || typeof valor === "number") {
+    return String(valor).trim();
+  }
+
+  if (Array.isArray(valor)) {
+    return valor
+      .filter((elemento) => typeof elemento === "string")
+      .map((elemento) => elemento.trim())
+      .filter(Boolean)
+      .join(", ");
+  }
+
+  return "";
+}
+
+function formatearFechaHora(valor) {
+  const texto = obtenerTexto(valor);
+  if (!texto) return "";
+
+  const fecha = new Date(texto);
+  return Number.isNaN(fecha.getTime()) ? texto : fecha.toLocaleString("es-CL");
+}
+
+function agregarDato(tarjeta, etiqueta, valor) {
+  const linea = document.createElement("p");
+  linea.className = "metadato";
+
+  const nombre = document.createElement("strong");
+  nombre.textContent = `${etiqueta}: `;
+
+  linea.append(nombre, document.createTextNode(valor));
+  tarjeta.append(linea);
+}
+
 function mostrarMensaje(contenedor, mensaje, esError = false) {
   const elemento = document.createElement("p");
   elemento.textContent = mensaje;
@@ -60,6 +95,13 @@ function mostrarObras(records, contenedor) {
         pie.textContent = titulo;
         tarjeta.append(pie);
       }
+
+      agregarDato(tarjeta, "Autor", obtenerTexto(fields.Autor) || "Sin autor");
+      agregarDato(
+        tarjeta,
+        "Fecha/Hora",
+        formatearFechaHora(fields["Fecha/Hora"]) || "Sin fecha/hora"
+      );
 
       return tarjeta;
     });
