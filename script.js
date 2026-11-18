@@ -109,6 +109,46 @@ function mostrarObras(records, contenedor) {
   contenedor.replaceChildren(...tarjetas);
 }
 
+function ajustarTituloMovil() {
+  const titulo = document.querySelector("header h1");
+  if (!titulo) return;
+
+  const palabras = Array.from(titulo.querySelectorAll("span"));
+  if (palabras.length !== 2) return;
+
+  if (!window.matchMedia("(max-width: 600px)").matches) {
+    palabras.forEach((palabra) => {
+      palabra.style.removeProperty("font-size");
+      palabra.style.removeProperty("letter-spacing");
+    });
+    return;
+  }
+
+  const ancho = titulo.getBoundingClientRect().width;
+  if (!ancho) return;
+
+  const medirPalabra = (palabra) => {
+    const rango = document.createRange();
+    rango.selectNodeContents(palabra);
+    return rango.getBoundingClientRect().width;
+  };
+
+  palabras.forEach((palabra) => {
+    palabra.style.fontSize = "100px";
+    palabra.style.letterSpacing = "0px";
+  });
+
+  const anchoBase = Math.max(...palabras.map(medirPalabra));
+  const tamano = (ancho / anchoBase) * 100;
+
+  palabras.forEach((palabra) => {
+    palabra.style.fontSize = `${tamano}px`;
+    const cantidadDeLetras = Array.from(palabra.textContent.trim()).length;
+    const espacio = (ancho - medirPalabra(palabra)) / cantidadDeLetras;
+    palabra.style.letterSpacing = `${Math.max(0, espacio)}px`;
+  });
+}
+
 async function cargarObras() {
   const contenedor = document.getElementById("miradas");
   if (!contenedor) return;
@@ -141,4 +181,6 @@ async function cargarObras() {
   }
 }
 
+ajustarTituloMovil();
+window.addEventListener("resize", ajustarTituloMovil);
 cargarObras();
