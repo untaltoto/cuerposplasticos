@@ -64,8 +64,12 @@ a{color: white;
   h1 {
     font-size: clamp(24px, 8vw, 38px);
     line-height: 1.1;
-    white-space: nowrap;
+    text-align: center;
     top: 0;
+  }
+
+  h1 span {
+    display: block;
   }
 
   h2 {
