@@ -57,6 +57,24 @@ function formatearFechaHora(valor) {
   return Number.isNaN(fecha.getTime()) ? texto : fecha.toLocaleString("es-CL");
 }
 
+function ordenarRegistrosCronologicamente(records) {
+  return records
+    .map((record, indice) => {
+      const fecha = new Date(obtenerTexto((record.fields || {})["Fecha/Hora"]));
+      return {
+        record,
+        indice,
+        tiempo: Number.isNaN(fecha.getTime()) ? null : fecha.getTime()
+      };
+    })
+    .sort((a, b) => {
+      if (a.tiempo === null) return b.tiempo === null ? a.indice - b.indice : 1;
+      if (b.tiempo === null) return -1;
+      return a.tiempo - b.tiempo || a.indice - b.indice;
+    })
+    .map(({ record }) => record);
+}
+
 function agregarDato(tarjeta, valor) {
   if (!valor) return;
 
@@ -176,7 +194,7 @@ async function cargarObras() {
       throw new Error("La respuesta de Airtable no contiene una lista de registros.");
     }
 
-    mostrarObras(data.records, contenedor);
+    mostrarObras(ordenarRegistrosCronologicamente(data.records), contenedor);
   } catch (error) {
     console.error("Error al cargar las imágenes:", error);
     mostrarMensaje(contenedor, `No se pudieron cargar las imágenes: ${error.message}`, true);
