@@ -12,7 +12,10 @@ export default async function handler(req, res) {
   try {
     // 1. SI ES UNA PETICIÓN DE LECTURA (GET)
     if (req.method === 'GET') {
-      const respuesta = await fetch(url, {
+      const parametros = new URLSearchParams({
+        filterByFormula: '{Estado} = "Aprobado"'
+      });
+      const respuesta = await fetch(`${url}?${parametros.toString()}`, {
         headers: { Authorization: `Bearer ${TOKEN}` }
       });
 
