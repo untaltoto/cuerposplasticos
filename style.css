@@ -21,7 +21,12 @@ h2 a {
 h3 {
     color: white;
     font-family: Arial Narrow, arial, sans-serif;
-    font-size: 20px;
+    font-size: 32px;
+    margin: 8px 0;
+}
+h3 a {
+    color: white;
+    font-size: inherit;
 }
 p {
     color: white;
@@ -85,6 +90,13 @@ a{color: white;
 
   h2 {
     font-size: clamp(22px, 6vw, 30px);
+    line-height: 1.2;
+    width: calc(100% - 32px);
+    margin: 0 auto;
+  }
+
+  h3 {
+    font-size: clamp(14px, 4vw, 18px);
     line-height: 1.2;
   }
 
