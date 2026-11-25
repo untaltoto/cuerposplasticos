@@ -93,6 +93,8 @@ a{color: white;
     line-height: 1.2;
     width: calc(100% - 32px);
     margin: 0 auto;
+    text-align: justify;
+    text-align-last: justify;
   }
 
   h3 {
