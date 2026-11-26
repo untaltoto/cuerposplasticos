@@ -89,17 +89,16 @@ a{color: white;
   }
 
   h2 {
-    font-size: clamp(15px, 5vw, 24px);
+    font-size: calc(13.21vw - 4.23px);
     line-height: 1.2;
     margin: 0 auto;
+    text-align: center;
     white-space: nowrap;
   }
 
   h3 {
-    font-size: clamp(10px, calc(4.41vw - 1.41px), 25.05px);
+    font-size: clamp(14px, 4vw, 18px);
     line-height: 1.2;
-    text-align: center;
-    white-space: nowrap;
   }
 
   #miradas {
