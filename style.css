@@ -89,11 +89,15 @@ a{color: white;
   }
 
   h2 {
-    font-size: calc(13.21vw - 4.23px);
+    font-size: clamp(15px, 5vw, 24px);
     line-height: 1.2;
     margin: 0 auto;
     text-align: center;
     white-space: nowrap;
+  }
+
+  h2 span {
+    display: inline-block;
   }
 
   h3 {

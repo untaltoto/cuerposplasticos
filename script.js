@@ -131,6 +131,7 @@ function ajustarTituloMovil() {
   const titulo = document.querySelector("header h1");
   if (!titulo) return;
 
+  const subtitulo = document.querySelector("header h2 span");
   const palabras = Array.from(titulo.querySelectorAll("span"));
   if (palabras.length !== 2) return;
 
@@ -139,15 +140,19 @@ function ajustarTituloMovil() {
       palabra.style.removeProperty("font-size");
       palabra.style.removeProperty("letter-spacing");
     });
+    if (subtitulo) {
+      subtitulo.style.removeProperty("font-size");
+      subtitulo.style.removeProperty("transform");
+    }
     return;
   }
 
   const ancho = titulo.getBoundingClientRect().width;
   if (!ancho) return;
 
-  const medirPalabra = (palabra) => {
+  const medirTexto = (elemento) => {
     const rango = document.createRange();
-    rango.selectNodeContents(palabra);
+    rango.selectNodeContents(elemento);
     return rango.getBoundingClientRect().width;
   };
 
@@ -156,7 +161,7 @@ function ajustarTituloMovil() {
     palabra.style.letterSpacing = "0px";
   });
 
-  const anchoBase = Math.max(...palabras.map(medirPalabra));
+  const anchoBase = Math.max(...palabras.map(medirTexto));
   const tamano = (ancho / anchoBase) * 100;
 
   palabras.forEach((palabra, indice) => {
@@ -164,9 +169,72 @@ function ajustarTituloMovil() {
     if (indice === 0) return;
 
     const cantidadDeLetras = Array.from(palabra.textContent.trim()).length;
-    const espacio = (ancho - medirPalabra(palabra)) / cantidadDeLetras;
+    const espacio = (ancho - medirTexto(palabra)) / cantidadDeLetras;
     palabra.style.letterSpacing = `${Math.max(0, espacio)}px`;
   });
+
+  if (subtitulo) {
+    subtitulo.style.transform = "none";
+    const contexto = document.createElement("canvas").getContext("2d");
+    if (!contexto) {
+      subtitulo.style.fontSize = `${(ancho / medirTexto(subtitulo)) * 100}px`;
+      return;
+    }
+
+    const palabra = palabras[1];
+    contexto.font = getComputedStyle(palabra).font;
+    const medidaPalabra = contexto.measureText(palabra.textContent.trim());
+    const espacioLetra = parseFloat(getComputedStyle(palabra).letterSpacing) || 0;
+    const letras = Array.from(palabra.textContent.trim()).length;
+    const anchoTintaPalabra =
+      medidaPalabra.actualBoundingBoxLeft +
+      medidaPalabra.actualBoundingBoxRight +
+      Math.max(0, letras - 1) * espacioLetra;
+    const centroTintaPalabra =
+      (medidaPalabra.actualBoundingBoxRight -
+        medidaPalabra.actualBoundingBoxLeft -
+        medidaPalabra.width) /
+      2;
+
+    if (
+      !Number.isFinite(anchoTintaPalabra) ||
+      anchoTintaPalabra <= 0 ||
+      !Number.isFinite(centroTintaPalabra)
+    ) {
+      subtitulo.style.fontSize = `${(ancho / medirTexto(subtitulo)) * 100}px`;
+      return;
+    }
+
+    subtitulo.style.fontSize = "100px";
+    let tamano = 100;
+
+    for (let intento = 0; intento < 4; intento++) {
+      subtitulo.style.fontSize = `${tamano}px`;
+      contexto.font = getComputedStyle(subtitulo).font;
+      const medidaSubtitulo = contexto.measureText(subtitulo.textContent.trim());
+      const anchoTintaSubtitulo =
+        medidaSubtitulo.actualBoundingBoxLeft +
+        medidaSubtitulo.actualBoundingBoxRight;
+
+      if (!Number.isFinite(anchoTintaSubtitulo) || anchoTintaSubtitulo <= 0) {
+        subtitulo.style.fontSize = `${(ancho / medirTexto(subtitulo)) * 100}px`;
+        return;
+      }
+
+      tamano *= anchoTintaPalabra / anchoTintaSubtitulo;
+    }
+
+    subtitulo.style.fontSize = `${tamano}px`;
+    contexto.font = getComputedStyle(subtitulo).font;
+    const medidaFinal = contexto.measureText(subtitulo.textContent.trim());
+    const centroTintaSubtitulo =
+      (medidaFinal.actualBoundingBoxRight -
+        medidaFinal.actualBoundingBoxLeft -
+        medidaFinal.width) /
+      2;
+
+    subtitulo.style.transform = `translateX(${centroTintaPalabra - centroTintaSubtitulo}px)`;
+  }
 }
 
 async function cargarObras() {
