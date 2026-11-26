@@ -21,7 +21,7 @@ h2 a {
 h3 {
     color: white;
     font-family: Arial Narrow, arial, sans-serif;
-    font-size: 28px;
+    font-size: 26.1px;
     margin: 8px 0;
 }
 h3 a {
@@ -96,8 +96,10 @@ a{color: white;
   }
 
   h3 {
-    font-size: clamp(14px, 4vw, 18px);
+    font-size: clamp(10px, calc(4.41vw - 1.41px), 25.05px);
     line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
   }
 
   #miradas {
